@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: healthy-programmer
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5435/healthy-programmer
+    username: postgres
+    password: strongpassword
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  liquibase:
+    change-log: classpath:liquibase-changelog.xml
