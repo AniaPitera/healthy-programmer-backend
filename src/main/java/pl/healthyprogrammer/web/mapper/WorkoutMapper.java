@@ -1,9 +1,9 @@
-package pl.healthyprogrammer.mapper;
+package pl.healthyprogrammer.web.mapper;
 
 import org.mapstruct.Mapper;
 import org.springframework.data.domain.Page;
-import pl.healthyprogrammer.dto.workout.WorkoutResponse;
-import pl.healthyprogrammer.model.workout.Workout;
+import pl.healthyprogrammer.web.dto.workout.WorkoutResponse;
+import pl.healthyprogrammer.core.model.workout.Workout;
 
 @Mapper(componentModel = "spring")
 public interface WorkoutMapper {

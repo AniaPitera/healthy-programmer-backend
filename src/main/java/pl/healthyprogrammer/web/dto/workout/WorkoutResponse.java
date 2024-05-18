@@ -1,9 +1,9 @@
-package pl.healthyprogrammer.dto.workout;
+package pl.healthyprogrammer.web.dto.workout;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
-import pl.healthyprogrammer.model.workout.Workout;
+import pl.healthyprogrammer.core.model.workout.Workout;
 
 import java.util.UUID;
 
@@ -15,7 +15,7 @@ import java.util.UUID;
 public class WorkoutResponse {
     private UUID id;
     private String title;
-    private String link;
+    private String thumbnail;
     private String channelTitle;
     @Enumerated(EnumType.STRING)
     private Workout.DifficultyLevel difficultyLevel;

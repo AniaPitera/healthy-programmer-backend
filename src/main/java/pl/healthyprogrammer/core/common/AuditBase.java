@@ -1,4 +1,4 @@
-package pl.healthyprogrammer.common;
+package pl.healthyprogrammer.core.common;
 
 import jakarta.persistence.*;
 import lombok.Getter;

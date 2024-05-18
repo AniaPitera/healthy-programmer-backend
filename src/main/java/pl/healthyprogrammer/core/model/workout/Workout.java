@@ -1,4 +1,4 @@
-package pl.healthyprogrammer.model.workout;
+package pl.healthyprogrammer.core.model.workout;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pl.healthyprogrammer.common.AuditBase;
+import pl.healthyprogrammer.core.common.AuditBase;
 
 import java.util.Objects;
 
@@ -19,7 +19,7 @@ import java.util.Objects;
 public class Workout extends AuditBase {
 
     private String title;
-    private String link;
+    private String thumbnail;
     private String channelTitle;
     @Enumerated(EnumType.STRING)
     private DifficultyLevel difficultyLevel;
@@ -30,12 +30,12 @@ public class Workout extends AuditBase {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Workout workout)) return false;
-        return Objects.equals(title, workout.title) && Objects.equals(link, workout.link) && Objects.equals(channelTitle, workout.channelTitle) && difficultyLevel == workout.difficultyLevel && exerciseType == workout.exerciseType;
+        return Objects.equals(title, workout.title) && Objects.equals(thumbnail, workout.thumbnail) && Objects.equals(channelTitle, workout.channelTitle) && difficultyLevel == workout.difficultyLevel && exerciseType == workout.exerciseType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, link, channelTitle, difficultyLevel, exerciseType);
+        return Objects.hash(title, thumbnail, channelTitle, difficultyLevel, exerciseType);
     }
 
     public enum DifficultyLevel {

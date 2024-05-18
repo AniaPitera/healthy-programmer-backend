@@ -1,9 +1,9 @@
-package pl.healthyprogrammer.model.user;
+package pl.healthyprogrammer.core.model.user;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
-import pl.healthyprogrammer.common.AuditBase;
+import pl.healthyprogrammer.core.common.AuditBase;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
