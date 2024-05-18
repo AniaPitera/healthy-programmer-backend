@@ -12,12 +12,12 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class RecipeIngredientRequest {
-    @NotNull
-    @Min(0)
+    @NotNull(message = "Quantity is required")
+    @Min(value = 0, message = "Quantity must be non-negative")
     private Double quantity;
-    @NotBlank
-    @Size(max = 50)
+    @NotBlank(message = "Unit cannot be blank")
+    @Size(max = 50, message = "Unit cannot exceed 50 characters")
     private String unit;
-    @NotNull
+    @NotNull(message = "Ingredient ID is required")
     private UUID ingredientId;
 }

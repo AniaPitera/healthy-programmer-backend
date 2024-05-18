@@ -13,13 +13,13 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 public class CreateRecipeRequest {
-    @NotBlank
-    @Size(max = 255)
+    @NotBlank(message = "Recipe title is required")
+    @Size(max = 255, message = "Title cannot exceed 255 characters")
     private String title;
     private String description;
-    @NotBlank
+    @NotBlank(message = "Instructions are required")
     private String instructions;
-    @NotEmpty
+    @NotEmpty(message = "Recipe must have at least one ingredient")
     @Valid
     private Set<RecipeIngredientRequest> recipeIngredients;
 }
