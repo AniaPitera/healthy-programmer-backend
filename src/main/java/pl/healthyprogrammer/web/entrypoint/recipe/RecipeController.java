@@ -1,5 +1,7 @@
 package pl.healthyprogrammer.web.entrypoint.recipe;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/recipes")
 @RequiredArgsConstructor
+@Tag(name = "Recipes")
 public class RecipeController {
     private final CreateRecipeService createRecipeService;
     private final GetRecipeService getRecipeService;
@@ -22,27 +25,32 @@ public class RecipeController {
     private final UpdateRecipeService updateRecipeService;
     private final DeleteRecipeService deleteRecipeService;
 
+    @Operation(summary = "Create a new recipe")
     @PostMapping
     public ResponseEntity<CreateRecipeResponse> createRecipe(@Valid @RequestBody CreateRecipeRequest request) {
         var response = createRecipeService.createRecipe(request);
         return ResponseEntity.created(URI.create("/recipes/" + response.getId())).body(response);
     }
 
+    @Operation(summary = "Show a page of recipes")
     @GetMapping
     public ResponseEntity<Page<RecipeResponse>> getRecipes(Pageable pageable) {
         return ResponseEntity.ok(getRecipesService.getRecipes(pageable));
     }
 
+    @Operation(summary = "Show recipe details")
     @GetMapping("/{recipeId}")
     public ResponseEntity<RecipeResponse> getRecipeById(@PathVariable UUID recipeId) {
         return ResponseEntity.ok(getRecipeService.getRecipeById(recipeId));
     }
 
+    @Operation(summary = "Update a recipe")
     @PutMapping("/{recipeId}")
     public ResponseEntity<UpdateRecipeResponse> updateRecipe(@PathVariable UUID recipeId, @Valid @RequestBody UpdateRecipeRequest request) {
         return ResponseEntity.ok(updateRecipeService.updateRecipe(recipeId, request));
     }
 
+    @Operation(summary = "Delete a recipe")
     @DeleteMapping("/{recipeId}")
     public ResponseEntity<Void> deleteRecipeById(@PathVariable UUID recipeId) {
         deleteRecipeService.deleteRecipeById(recipeId);
