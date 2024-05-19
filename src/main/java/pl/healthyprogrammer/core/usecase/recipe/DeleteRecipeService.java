@@ -21,7 +21,7 @@ public class DeleteRecipeService {
     public void deleteRecipeById(UUID recipeId) {
         log.info("Deleting a recipe with ID: {}", recipeId);
         try {
-            Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeNotFoundException("Recipe not found"));
+            Recipe recipe = fetchRecipe(recipeId);
             recipeRepository.delete(recipe);
             log.info("Successfully deleted recipe with ID: {}", recipeId);
         } catch (RecipeNotFoundException e) {
@@ -31,5 +31,9 @@ public class DeleteRecipeService {
             log.error("Unexpected error occurred while deleting recipe with ID: {}. Error: {}", recipeId, e.getMessage(), e);
             throw e;
         }
+    }
+
+    private Recipe fetchRecipe(UUID recipeId) {
+        return recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeNotFoundException("Recipe not found"));
     }
 }

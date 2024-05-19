@@ -21,7 +21,7 @@ public class GetRecipeService {
     public RecipeResponse getRecipeById(UUID recipeId) {
         log.info("Attempting to fetch recipe with ID: {}", recipeId);
         try {
-            Recipe recipe = recipeRepository.findByIdWithIngredients(recipeId).orElseThrow(() -> new RecipeNotFoundException("Recipe not found"));
+            Recipe recipe = fetchRecipe(recipeId);
             RecipeResponse response = recipeMapper.mapToDto(recipe);
             log.info("Successfully fetched recipe with ID: {}", recipeId);
             return response;
@@ -32,5 +32,9 @@ public class GetRecipeService {
             log.error("Unexpected error occurred while fetching recipe with ID: {}. Error: {}", recipeId, e.getMessage(), e);
             throw e;
         }
+    }
+
+    private Recipe fetchRecipe(UUID recipeId) {
+        return recipeRepository.findByIdWithIngredients(recipeId).orElseThrow(() -> new RecipeNotFoundException("Recipe not found"));
     }
 }

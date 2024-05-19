@@ -30,39 +30,56 @@ public class UpdateRecipeService {
     public UpdateRecipeResponse updateRecipe(UUID recipeId, UpdateRecipeRequest request) {
         log.info("Updating recipe with ID: {}", recipeId);
         try {
-            Recipe recipe = recipeRepository.findById(recipeId)
-                    .orElseThrow(() -> new RecipeNotFoundException("Recipe not found"));
-
+            Recipe recipe = fetchRecipe(recipeId);
             updateRecipeMapper.updateRecipeUsingRequest(request, recipe);
-
-            recipe.getRecipeIngredients().clear();
-
-            for (UpdateRecipeIngredientRequest ingredientRequest : request.getRecipeIngredients()) {
-                RecipeIngredient recipeIngredient = new RecipeIngredient();
-                recipeIngredient.setQuantity(ingredientRequest.getQuantity());
-                recipeIngredient.setUnit(ingredientRequest.getUnit());
-
-                Ingredient ingredient = ingredientRepository.findById(ingredientRequest.getIngredientId())
-                        .orElseThrow(() -> new IngredientNotFoundException("Ingredient not found"));
-                recipeIngredient.setIngredient(ingredient);
-                recipeIngredient.setRecipe(recipe);
-
-                recipe.getRecipeIngredients().add(recipeIngredient);
-            }
+            clearRecipeIngredients(recipe);
+            updateRecipeIngredients(request, recipe);
             Recipe updatedRecipe = recipeRepository.save(recipe);
             UpdateRecipeResponse response = updateRecipeMapper.mapToDto(updatedRecipe);
             log.info("Successfully updated recipe. Recipe ID: {}", recipeId);
             return response;
         } catch (RecipeNotFoundException e) {
-            log.error("IngredientNotFoundException while updating a recipe: {}", e.getMessage());
+            log.error("RecipeNotFoundException while updating a recipe: {}", e.getMessage());
             throw e;
         } catch (IngredientNotFoundException e) {
-            log.error("RecipeNotFoundException while fetching a recipe with ID: {}. Error: {}", recipeId, e.getMessage());
+            log.error("IngredientNotFoundException while fetching a recipe with ID: {}. Error: {}", recipeId, e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Unexpected error during updating recipe with ID: {}. Error: {}", recipeId, e.getMessage(), e);
             throw e;
         }
+    }
 
+    private Recipe fetchRecipe(UUID recipeId) {
+        return recipeRepository.findByIdWithIngredients(recipeId)
+                .orElseThrow(() -> new RecipeNotFoundException("Recipe not found"));
+    }
+
+    private void clearRecipeIngredients(Recipe recipe) {
+        recipe.getRecipeIngredients().clear();
+    }
+
+    private void updateRecipeIngredients(UpdateRecipeRequest request, Recipe recipe) {
+        for (UpdateRecipeIngredientRequest ingredientRequest : request.getRecipeIngredients()) {
+            RecipeIngredient recipeIngredient = addRecipeIngredient(ingredientRequest, recipe);
+            recipe.getRecipeIngredients().add(recipeIngredient);
+        }
+    }
+
+    private RecipeIngredient addRecipeIngredient(UpdateRecipeIngredientRequest ingredientRequest, Recipe recipe) {
+        RecipeIngredient recipeIngredient = new RecipeIngredient();
+        recipeIngredient.setQuantity(ingredientRequest.getQuantity());
+        recipeIngredient.setUnit(ingredientRequest.getUnit());
+
+        Ingredient ingredient = fetchIngredient(ingredientRequest.getIngredientId());
+        recipeIngredient.setIngredient(ingredient);
+        recipeIngredient.setRecipe(recipe);
+
+        return recipeIngredient;
+    }
+
+    private Ingredient fetchIngredient(UUID ingredientId) {
+        return ingredientRepository.findById(ingredientId)
+                .orElseThrow(() -> new IngredientNotFoundException("Ingredient not found with id: " + ingredientId));
     }
 }

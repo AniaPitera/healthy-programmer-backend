@@ -21,7 +21,7 @@ public class GetRecipesService {
     public Page<RecipeResponse> getRecipes(Pageable pageable) {
         log.info("Fetching recipes for page: {} with size: {}", pageable.getPageNumber(), pageable.getPageSize());
         try {
-            Page<Recipe> result = recipeRepository.findAllWithIngredients(pageable);
+            Page<Recipe> result = fetchRecipes(pageable);
             Page<RecipeResponse> response = recipeMapper.mapToDto(result);
             log.info("Successfully fetched recipes for page: {} with size: {}.", pageable.getPageNumber(), pageable.getPageSize());
             return response;
@@ -29,5 +29,9 @@ public class GetRecipesService {
             log.error("Unexpected error occurred while recipes for page: {} with size: {}. Error: {}", pageable.getPageNumber(), pageable.getPageSize(), e.getMessage(), e);
             throw e;
         }
+    }
+
+    private Page<Recipe> fetchRecipes(Pageable pageable) {
+        return recipeRepository.findAllWithIngredients(pageable);
     }
 }

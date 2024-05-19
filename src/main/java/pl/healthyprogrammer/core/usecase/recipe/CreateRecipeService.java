@@ -1,6 +1,5 @@
 package pl.healthyprogrammer.core.usecase.recipe;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ import pl.healthyprogrammer.web.mapper.recipe.CreateRecipeMapper;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -32,21 +32,7 @@ public class CreateRecipeService {
         log.info("Creating a recipe with title: {}", request.getTitle());
         try {
             Recipe recipe = createRecipeMapper.mapToEntity(request);
-            Set<RecipeIngredient> recipeIngredients = new HashSet<>();
-
-            for (RecipeIngredientRequest ingredientRequest : request.getRecipeIngredients()) {
-                RecipeIngredient recipeIngredient = new RecipeIngredient();
-                recipeIngredient.setQuantity(ingredientRequest.getQuantity());
-                recipeIngredient.setUnit(ingredientRequest.getUnit());
-
-                Ingredient ingredient = ingredientRepository.findById(ingredientRequest.getIngredientId())
-                        .orElseThrow(() -> new EntityNotFoundException("Ingredient not found"));
-
-                recipeIngredient.setIngredient(ingredient);
-                recipeIngredient.setRecipe(recipe);
-                recipeIngredients.add(recipeIngredient);
-            }
-
+            Set<RecipeIngredient> recipeIngredients = addRecipeIngredients(request, recipe);
             recipe.setRecipeIngredients(recipeIngredients);
             Recipe savedRecipe = recipeRepository.save(recipe);
             CreateRecipeResponse response = createRecipeMapper.mapToDto(savedRecipe);
@@ -59,5 +45,31 @@ public class CreateRecipeService {
             log.error("Unexpected error during creating a recipe with title: {}. Error: {}", request.getTitle(), e.getMessage(), e);
             throw e;
         }
+    }
+
+    private Set<RecipeIngredient> addRecipeIngredients(CreateRecipeRequest request, Recipe recipe) {
+        Set<RecipeIngredient> recipeIngredients = new HashSet<>();
+        for (RecipeIngredientRequest ingredientRequest : request.getRecipeIngredients()) {
+            RecipeIngredient recipeIngredient = addRecipeIngredient(ingredientRequest, recipe);
+            recipeIngredients.add(recipeIngredient);
+        }
+        return recipeIngredients;
+    }
+
+    private RecipeIngredient addRecipeIngredient(RecipeIngredientRequest ingredientRequest, Recipe recipe) {
+        RecipeIngredient recipeIngredient = new RecipeIngredient();
+        recipeIngredient.setQuantity(ingredientRequest.getQuantity());
+        recipeIngredient.setUnit(ingredientRequest.getUnit());
+
+        Ingredient ingredient = fetchIngredient(ingredientRequest.getIngredientId());
+        recipeIngredient.setIngredient(ingredient);
+        recipeIngredient.setRecipe(recipe);
+
+        return recipeIngredient;
+    }
+
+    private Ingredient fetchIngredient(UUID ingredientId) {
+        return ingredientRepository.findById(ingredientId)
+                .orElseThrow(() -> new IngredientNotFoundException("Ingredient not found with id: " + ingredientId));
     }
 }
