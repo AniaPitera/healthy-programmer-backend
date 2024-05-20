@@ -22,7 +22,7 @@ public class GetRecipesService {
         log.info("Fetching recipes for page: {} with size: {}", pageable.getPageNumber(), pageable.getPageSize());
         try {
             Page<Recipe> result = fetchRecipes(pageable);
-            Page<RecipeResponse> response = recipeMapper.mapToDto(result);
+            Page<RecipeResponse> response = recipeMapper.mapPageToDto(result);
             log.info("Successfully fetched recipes for page: {} with size: {}.", pageable.getPageNumber(), pageable.getPageSize());
             return response;
         } catch (Exception e) {

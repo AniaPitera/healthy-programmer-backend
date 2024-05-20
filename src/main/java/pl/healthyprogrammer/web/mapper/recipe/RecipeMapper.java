@@ -9,7 +9,7 @@ import pl.healthyprogrammer.web.dto.recipe.RecipeResponse;
 public interface RecipeMapper {
     RecipeResponse mapToDto(Recipe recipe);
 
-    default Page<RecipeResponse> mapToDto(Page<Recipe> recipePage) {
+    default Page<RecipeResponse> mapPageToDto(Page<Recipe> recipePage) {
         return recipePage.map(this::mapToDto);
     }
 }

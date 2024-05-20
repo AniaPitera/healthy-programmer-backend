@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: healthy-programmer
@@ -14,3 +17,4 @@ spring:
     open-in-view: false
   liquibase:
     change-log: classpath:liquibase-changelog.xml
+
