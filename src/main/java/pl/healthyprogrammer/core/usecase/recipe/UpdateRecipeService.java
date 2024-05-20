@@ -4,16 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.healthyprogrammer.core.model.ingredient.Ingredient;
-import pl.healthyprogrammer.core.model.ingredient.IngredientRepository;
 import pl.healthyprogrammer.core.model.recipe.Recipe;
 import pl.healthyprogrammer.core.model.recipe.RecipeRepository;
-import pl.healthyprogrammer.core.model.recipe_ingredient.RecipeIngredient;
 import pl.healthyprogrammer.core.usecase.exception.IngredientNotFoundException;
 import pl.healthyprogrammer.core.usecase.exception.RecipeNotFoundException;
 import pl.healthyprogrammer.web.dto.recipe.UpdateRecipeRequest;
 import pl.healthyprogrammer.web.dto.recipe.UpdateRecipeResponse;
-import pl.healthyprogrammer.web.dto.recipe_ingredient.UpdateRecipeIngredientRequest;
 import pl.healthyprogrammer.web.mapper.recipe.UpdateRecipeMapper;
 
 import java.util.UUID;
@@ -23,8 +19,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UpdateRecipeService {
     private final RecipeRepository recipeRepository;
-    private final IngredientRepository ingredientRepository;
     private final UpdateRecipeMapper updateRecipeMapper;
+    private final RecipeIngredientService recipeIngredientService;
 
     @Transactional
     public UpdateRecipeResponse updateRecipe(UUID recipeId, UpdateRecipeRequest request) {
@@ -32,8 +28,8 @@ public class UpdateRecipeService {
         try {
             Recipe recipe = fetchRecipe(recipeId);
             updateRecipeMapper.updateRecipeUsingRequest(request, recipe);
-            clearRecipeIngredients(recipe);
-            updateRecipeIngredients(request, recipe);
+            recipeIngredientService.clearRecipeIngredients(recipe);
+            recipeIngredientService.addRecipeIngredients(request.getRecipeIngredients(), recipe);
             Recipe updatedRecipe = recipeRepository.save(recipe);
             UpdateRecipeResponse response = updateRecipeMapper.mapToDto(updatedRecipe);
             log.info("Successfully updated recipe. Recipe ID: {}", recipeId);
@@ -53,33 +49,5 @@ public class UpdateRecipeService {
     private Recipe fetchRecipe(UUID recipeId) {
         return recipeRepository.findByIdWithIngredients(recipeId)
                 .orElseThrow(() -> new RecipeNotFoundException("Recipe not found"));
-    }
-
-    private void clearRecipeIngredients(Recipe recipe) {
-        recipe.getRecipeIngredients().clear();
-    }
-
-    private void updateRecipeIngredients(UpdateRecipeRequest request, Recipe recipe) {
-        for (UpdateRecipeIngredientRequest ingredientRequest : request.getRecipeIngredients()) {
-            RecipeIngredient recipeIngredient = addRecipeIngredient(ingredientRequest, recipe);
-            recipe.getRecipeIngredients().add(recipeIngredient);
-        }
-    }
-
-    private RecipeIngredient addRecipeIngredient(UpdateRecipeIngredientRequest ingredientRequest, Recipe recipe) {
-        RecipeIngredient recipeIngredient = new RecipeIngredient();
-        recipeIngredient.setQuantity(ingredientRequest.getQuantity());
-        recipeIngredient.setUnit(ingredientRequest.getUnit());
-
-        Ingredient ingredient = fetchIngredient(ingredientRequest.getIngredientId());
-        recipeIngredient.setIngredient(ingredient);
-        recipeIngredient.setRecipe(recipe);
-
-        return recipeIngredient;
-    }
-
-    private Ingredient fetchIngredient(UUID ingredientId) {
-        return ingredientRepository.findById(ingredientId)
-                .orElseThrow(() -> new IngredientNotFoundException("Ingredient not found with id: " + ingredientId));
     }
 }

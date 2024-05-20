@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import pl.healthyprogrammer.web.dto.recipe_ingredient.UpdateRecipeIngredientRequest;
+import pl.healthyprogrammer.web.dto.recipe_ingredient.RecipeIngredientRequest;
 
 import java.util.Set;
 
@@ -21,5 +21,5 @@ public class UpdateRecipeRequest {
     private String instructions;
     @NotEmpty(message = "Recipe must have at least one ingredient")
     @Valid
-    private Set<UpdateRecipeIngredientRequest> recipeIngredients;
+    private Set<RecipeIngredientRequest> recipeIngredients;
 }

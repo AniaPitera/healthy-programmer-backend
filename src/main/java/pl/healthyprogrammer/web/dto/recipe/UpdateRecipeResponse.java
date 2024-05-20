@@ -2,7 +2,7 @@ package pl.healthyprogrammer.web.dto.recipe;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import pl.healthyprogrammer.web.dto.recipe_ingredient.UpdateRecipeIngredientResponse;
+import pl.healthyprogrammer.web.dto.recipe_ingredient.RecipeIngredientResponse;
 
 import java.util.Set;
 import java.util.UUID;
@@ -14,5 +14,5 @@ public class UpdateRecipeResponse {
     private String title;
     private String description;
     private String instructions;
-    private Set<UpdateRecipeIngredientResponse> recipeIngredients;
+    private Set<RecipeIngredientResponse> recipeIngredients;
 }
